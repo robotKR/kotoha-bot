@@ -1,0 +1,8 @@
+# fly.toml file generated for kotoha on 2022-09-24T17:10:33+09:00
+
+app = "kotoha"
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
+
+[env]

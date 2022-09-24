@@ -1,0 +1,7 @@
+requests-oauthlib==1.3.0
+tweepy==4.4.0
+requests==2.26.0
+schedule== 1.1.0
+mecab-python3==1.0.5
+unidic-lite==1.0.8
+markovify==0.9.4
