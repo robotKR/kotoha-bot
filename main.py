@@ -19,8 +19,8 @@ consumer_secret = os.environ['consumer_secret']
 access_token = os.environ['access_token']
 access_token_secret = os.environ['access_token_secret']
 bearer_token = os.environ['bearer_token']
-API_KEY_mebo = os.environ['bearer_token']
-agent_id = os.environ['bearer_token']
+API_KEY_mebo = os.environ['API_KEY_mebo']
+agent_id = os.environ['agent_id']
 
 Client = tweepy.Client(bearer_token, consumer_key, consumer_secret, access_token, access_token_secret)
 
