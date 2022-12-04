@@ -10,7 +10,7 @@ import schedule
 import re
 import random
 import concurrent.futures
-#import tweets
+import tweets
 import global_value as g
 import os
 from http.client import RemoteDisconnected
@@ -170,13 +170,13 @@ def get_stream(headers):
 #class ChunkedEncodingError(Exception):
     #pass
 
-"""def tweet1():
+def tweet1():
     tweets.tweet()
     tweets1 = g.generation_list
     tweets1 = tweets1[1]
     tweets1 = re.sub(' ', "", tweets1)
     Client.create_tweet(text=tweets1)
-    print("Tweet Done")"""
+    print("Tweet Done")
 
 def morning():
     print("schedule morning done")
@@ -209,7 +209,7 @@ def night():
 def schedule1():
     schedule.every().days.at("22:00").do(morning)
     schedule.every().days.at("14:00").do(night)
-    #schedule.every(2).hours.do(tweet1)
+    schedule.every(1).hours.do(tweet1)
     
     while True:
         schedule.run_pending()
