@@ -99,11 +99,11 @@ def get_stream(headers):
                 for response_line in response.iter_lines():
                     if response_line:
                         json_response = json.loads(response_line)
-                        tweet_id = json_response["data"]["id"] #ツイートID
-                        reply_text=json_response["data"]["text"] #相手の送ってきた内容
-                        user_id=json_response["data"]["author_id"]#ユーザーID
-                        user_name=json_response["includes"]["users"]#ユーザーネーム取得
-                        user_name=user_name[0]["name"]
+                        tweet_id = json_response.get["data"]["id"] #ツイートID
+                        reply_text=json_response.get["data"]["text"] #相手の送ってきた内容
+                        user_id=json_response.get["data"]["author_id"]#ユーザーID
+                        user_name=json_response.get["includes"]["users"]#ユーザーネーム取得
+                        user_name=user_name.get[0]["name"]
 
                         print(user_name)
 
@@ -146,10 +146,30 @@ def get_stream(headers):
 
         except RemoteDisconnected:
             print(traceback.format_exc())
-            time.sleep(6)
-            continue
+            run+=1
+            if run <10:
+                time.sleep(6)
+                print("再接続します",run+"回目")
+                continue
+            else:
+                run=0
+                Client.create_tweet(text="@robotKR3\nRemoteDisconnected")
+                Client.create_tweet(text="【重要】現在、エラー発生のため自動返信機能が使用できません。\n修復までお待ちください。")
 
-        except ConnectionError as e:
+        except ConnectionResetError:
+            print(traceback.format_exc())
+            run+=1
+            if run <10:
+                time.sleep(6)
+                print("再接続します",run+"回目")
+                continue
+            else:
+                run=0
+                Client.create_tweet(text="@robotKR3\nConnectionResetError")
+                Client.create_tweet(text="【重要】現在、エラー発生のため自動返信機能が使用できません。\n修復までお待ちください。")
+
+
+        except ConnectionError:
             print(traceback.format_exc())
             run+=1
             if run <10:
@@ -159,12 +179,14 @@ def get_stream(headers):
             else:
                 run=0
                 Client.create_tweet(text="@robotKR3\nConnectionError")
+                Client.create_tweet(text="【重要】現在、エラー発生のため自動返信機能が使用できません。\n修復までお待ちください。")
         
-        except Exception as e:
+        except Exception:
             # some other error occurred.. stop the loop
             print("Stopping loop because of un-handled error")
             print(traceback.format_exc())
             Client.create_tweet(text="@robotKR3\nStopping loop because of un-handled error")
+            Client.create_tweet(text="【重要】現在、エラー発生のため自動返信機能が使用できません。\n修復までお待ちください。")
             run = 0
 	    
 #class ChunkedEncodingError(Exception):
@@ -219,6 +241,7 @@ def main():
     rules = get_rules()
     delete = delete_all_rules(rules)
     set = set_rules(delete)
+    tweet1()
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=2)
     executor.submit(schedule1)
     executor.submit(get_stream(set))

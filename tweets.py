@@ -21,8 +21,8 @@ def tweet():
     api = tweepy.API(auth)
     #-------------------------------------------------------------------
  
-    #ツイートを投稿
-    tweets = api.home_timeline(count=500, page=1)
+    #ツイート収集
+    tweets = api.home_timeline(count=200)
     tweet_list = []
     text_list = []
     g.generation_list = []
@@ -40,7 +40,7 @@ def tweet():
         tweet=tweet+"。"
         tweet_list.append(tweet)
 
-    print(tweet_list)
+    #print(tweet_list)
     text = '\n'.join(tweet_list)
 
     # Replace Bad Symbols for markovify to function
@@ -75,7 +75,7 @@ def tweet():
         g.generation_list.append(generation)
         g.generation_list = filter(None, g.generation_list)
         g.generation_list = list(g.generation_list)
-        print(g.generation_list)
+        #print(g.generation_list)
 
 if __name__ == '__main__':
     tweet()
