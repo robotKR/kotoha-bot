@@ -1,4 +1,4 @@
-# fly.toml file generated for kotoha on 2022-09-24T17:10:33+09:00
+# fly.toml file generated for kotoha on 2022-12-04T12:50:47+09:00
 
 app = "kotoha"
 kill_signal = "SIGINT"

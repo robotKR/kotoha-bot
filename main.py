@@ -120,7 +120,7 @@ def get_stream(headers):
 
                         response = requests.post('https://api-mebo.dev/api', headers=headers_mebo, data=json.dumps(json_data))
                         
-                        res_data = response.json()
+                        #res_data = response.json()
                         replay = response.text
                         replay = json.loads(replay)
                         replay = replay['bestResponse']['utterance']
@@ -139,7 +139,7 @@ def get_stream(headers):
                             in_reply_to_tweet_id =tweet_id)
 
 
-        except requests.exceptions.ChunkedEncodingError as chunkError:
+        except requests.exceptions.ChunkedEncodingError:
             print(traceback.format_exc())
             time.sleep(6)
             continue
@@ -149,7 +149,7 @@ def get_stream(headers):
             run+=1
             if run <10:
                 time.sleep(6)
-                print("再接続します",run+"回目")
+                print("Reconnect",run+"st")
                 continue
             else:
                 run=0
@@ -161,7 +161,7 @@ def get_stream(headers):
             run+=1
             if run <10:
                 time.sleep(6)
-                print("再接続します",run+"回目")
+                print("Reconnect",run+"st")
                 continue
             else:
                 run=0
@@ -174,7 +174,7 @@ def get_stream(headers):
             run+=1
             if run <10:
                 time.sleep(6)
-                print("再接続します",run+"回目")
+                print("Reconnect",run+"st")
                 continue
             else:
                 run=0
@@ -193,12 +193,28 @@ def get_stream(headers):
     #pass
 
 def tweet1():
-    tweets.tweet()
-    tweets1 = g.generation_list
-    tweets1 = tweets1[1]
-    tweets1 = re.sub(' ', "", tweets1)
-    Client.create_tweet(text=tweets1)
-    print("Tweet Done")
+    run = 1
+    while run:
+        try:
+            tweets.tweet()
+            tweets1 = g.generation_list
+            tweets1 = tweets1[1]
+            tweets1 = re.sub(' ', "", tweets1)
+            Client.create_tweet(text=tweets1)
+            print("Tweet Done")
+        
+        except tweepy.tweepy.errors.Forbidden:
+            run+=1
+            if run <10:
+                time.sleep(6)
+                print("Reconnect",run+"st")
+                continue
+            else:
+                run=0
+                Client.create_tweet(text="@robotKR3\ntweepy.Error")
+                Client.create_tweet(text="【重要】現在、エラー発生のため自動返信機能が使用できません。\n修復までお待ちください。")
+
+
 
 def morning():
     print("schedule morning done")
