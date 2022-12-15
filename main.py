@@ -13,9 +13,10 @@ import concurrent.futures
 import tweets
 import global_value as g
 import os
+import datetime
 from http.client import RemoteDisconnected
-"""from dotenv import load_dotenv
-load_dotenv()"""
+from dotenv import load_dotenv
+load_dotenv()
 
 consumer_key = os.environ['consumer_key']
 consumer_secret = os.environ['consumer_secret']
@@ -99,11 +100,11 @@ def get_stream(headers):
                 for response_line in response.iter_lines():
                     if response_line:
                         json_response = json.loads(response_line)
-                        tweet_id = json_response.get["data"]["id"] #ツイートID
-                        reply_text=json_response.get["data"]["text"] #相手の送ってきた内容
-                        user_id=json_response.get["data"]["author_id"]#ユーザーID
-                        user_name=json_response.get["includes"]["users"]#ユーザーネーム取得
-                        user_name=user_name.get[0]["name"]
+                        tweet_id = json_response.get("data",{}).get("id")
+                        reply_text=json_response.get("data",{}).get("text")#相手の送ってきた内容
+                        user_id=json_response.get("data",{}).get("author_id")#ユーザーID
+                        user_name=json_response.get("includes",{}).get("users")
+                        user_name=json_response.get(0,{}).get("name")#ユーザーネーム取得
 
                         print(user_name)
 
@@ -147,7 +148,7 @@ def get_stream(headers):
         except RemoteDisconnected:
             print(traceback.format_exc())
             run+=1
-            if run <10:
+            if run <5:
                 time.sleep(6)
                 print("Reconnect",run+"st")
                 continue
@@ -159,7 +160,7 @@ def get_stream(headers):
         except ConnectionResetError:
             print(traceback.format_exc())
             run+=1
-            if run <10:
+            if run <5:
                 time.sleep(6)
                 print("Reconnect",run+"st")
                 continue
@@ -172,7 +173,7 @@ def get_stream(headers):
         except ConnectionError:
             print(traceback.format_exc())
             run+=1
-            if run <10:
+            if run <5:
                 time.sleep(6)
                 print("Reconnect",run+"st")
                 continue
@@ -193,28 +194,12 @@ def get_stream(headers):
     #pass
 
 def tweet1():
-    run = 1
-    while run:
-        try:
-            tweets.tweet()
-            tweets1 = g.generation_list
-            tweets1 = tweets1[1]
-            tweets1 = re.sub(' ', "", tweets1)
-            Client.create_tweet(text=tweets1)
-            print("Tweet Done")
-        
-        except tweepy.tweepy.errors.Forbidden:
-            run+=1
-            if run <10:
-                time.sleep(6)
-                print("Reconnect",run+"st")
-                continue
-            else:
-                run=0
-                Client.create_tweet(text="@robotKR3\ntweepy.Error")
-                Client.create_tweet(text="【重要】現在、エラー発生のため自動返信機能が使用できません。\n修復までお待ちください。")
-
-
+    tweets.tweet()
+    tweets1 = g.generation_list
+    tweets1 = tweets1[1]
+    tweets1 = re.sub(' ', "", tweets1)
+    Client.create_tweet(text=tweets1)
+    print("Tweet Done")
 
 def morning():
     print("schedule morning done")
@@ -258,6 +243,9 @@ def main():
     delete = delete_all_rules(rules)
     set = set_rules(delete)
     tweet1()
+    date1 = datetime.datetime.now()
+    date1_str = date1.strftime('%Y/%m/%d %H:%M:%S')
+    Client.create_tweet(text="@robotKR3\nStartup complete\n"+date1_str)
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=2)
     executor.submit(schedule1)
     executor.submit(get_stream(set))
